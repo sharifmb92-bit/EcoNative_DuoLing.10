@@ -14,7 +14,7 @@
             --bg-me: #1e1e1e;
             --bg-client: #ffffff;
             --c-idle: #ea4335;   /* Rojo en reposo */
-            --c-me: #ff7a00;     /* Color Calabaza personalizado */
+            --c-me: #ff7a00;     /* Color Calabaza para ti */
             --c-client: #34a853; /* Verde para el cliente */
         }
 
@@ -51,15 +51,16 @@
             position: relative;
         }
 
-        /* Colocado más abajo para dar más espacio de recorrido al botón central */
+        /* Situado estratégicamente arriba del todo (por encima de los tres puntos de texto) */
         #lang-label-wrapper {
             position: absolute;
-            top: calc(75px + env(safe-area-inset-top));
+            top: calc(20px + env(safe-area-inset-top));
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 10;
         }
 
-        .shift-label { transform: translateY(-110px); }
+        /* Desplazamiento progresivo cuando sube el botón */
+        .shift-label { transform: translateY(-50px); }
 
         .lang-label {
             font-size: 13px; 
@@ -81,6 +82,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            margin-top: 20px;
         }
 
         .client-text { color: #333; }
@@ -100,7 +102,7 @@
             padding-bottom: calc(40px + env(safe-area-inset-bottom));
         }
 
-        /* --- CONTROL CENTRAL CALIBRADO CON MOVIMIENTO SUAVE Y PROGRESIVO --- */
+        /* --- CONTROL CENTRAL CON TRANSICIÓN PROGRESIVA --- */
         .controls {
             position: absolute; 
             top: 50%; 
@@ -118,7 +120,6 @@
         .mic-wrapper {
             position: absolute;
             transform: translateY(0);
-            /* Transición fluida de velocidad intermedia, elegante y progresiva */
             transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
             pointer-events: auto;
         }
@@ -139,7 +140,7 @@
             transition: background-color 0.5s ease, box-shadow 0.5s ease, transform 0.5s ease;
         }
 
-        /* Distancia extendida gracias a la bajada de la etiqueta del cliente */
+        /* Distancias amplias de recorrido libre */
         .pos-me .mic-wrapper { transform: translateY(70px); }
         .pos-client .mic-wrapper { transform: translateY(-75px); }
 
@@ -161,24 +162,24 @@
             50% { box-shadow: 0 0 45px rgba(52, 168, 83, 0.9), 0 0 0 15px rgba(52, 168, 83, 0%); }
         }
 
-        /* --- BANDERAS DE SELECCIÓN --- */
+        /* --- PANEL DE BANDERAS COMPLETO (INCLUYE ITALIA) --- */
         .flags {
             position: absolute; 
             bottom: calc(25px + env(safe-area-inset-bottom)); 
             display: flex; 
-            gap: 20px;
+            gap: 15px;
             z-index: 200; 
             pointer-events: auto;
         }
         
         .flag-btn {
-            font-size: 30px; 
+            font-size: 28px; 
             background: rgba(255,255,255,0.05); 
             border: 3px solid transparent; 
             cursor: pointer; 
             border-radius: 50%; 
-            width: 60px; 
-            height: 60px;
+            width: 54px; 
+            height: 54px;
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -232,6 +233,7 @@
             <button class="flag-btn active" onclick="setLang('en', 'Inglés')">🇬🇧</button>
             <button class="flag-btn" onclick="setLang('fr', 'Francés')">🇫🇷</button>
             <button class="flag-btn" onclick="setLang('de', 'Alemán')">🇩🇪</button>
+            <button class="flag-btn" onclick="setLang('it', 'Italiano')">🇮🇹</button>
         </div>
     </div>
 
@@ -242,7 +244,7 @@
         let currentTurn = 'me'; 
         let autoStopTimer;
 
-        const langCodes = { 'en': 'en-US', 'fr': 'fr-FR', 'de': 'de-DE' };
+        const langCodes = { 'en': 'en-US', 'fr': 'fr-FR', 'de': 'de-DE', 'it': 'it-IT' };
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
@@ -363,14 +365,12 @@
                     document.getElementById('text-client').innerText = translated;
                     speak(translated, langCodes[targetLang], () => {
                         currentTurn = 'client';
-                        // Da un respiro de 1.5 segundos para que lean antes de abrir escucha
                         setTimeout(startListening, 1500); 
                     });
                 } else {
                     document.getElementById('text-me').innerText = translated;
                     speak(translated, 'es-ES', () => {
                         currentTurn = 'me';
-                        // Da un respiro de 1.5 segundos para que leas antes de abrir escucha
                         setTimeout(startListening, 1500); 
                     });
                 }
